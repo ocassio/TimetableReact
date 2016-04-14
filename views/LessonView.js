@@ -7,12 +7,33 @@ import React, {
 
 class LessonView extends Component {
   render() {
+    var lesson = this.props.lesson;
+
     return (
       <View style={styles.container}>
         <Text style={styles.number}>
-          {this.props.lesson.number}
+          {lesson.number}
         </Text>
         <View style={styles.rightContainer}>
+          <View style={styles.doubleTextContainer}>
+            <Text style={styles.leftText}>
+              {lesson.time.from} - {lesson.time.to}
+            </Text>
+            <Text style={styles.rightText}>
+              {lesson.room}
+            </Text>
+          </View>
+          <Text style={styles.name}>
+            {lesson.name}
+          </Text>
+          <View style={styles.doubleTextContainer}>
+            <Text style={styles.leftText}>
+              {lesson.teacher}
+            </Text>
+            <Text style={styles.rightText}>
+              {lesson.type}
+            </Text>
+          </View>
         </View>
       </View>
     );
@@ -25,15 +46,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
+    padding: 20
   },
   number: {
-    fontSize: 20,
+    width: 20,
+    fontSize: 28,
     fontWeight: '500'
   },
   rightContainer: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'red'
+    marginLeft: 20
+  },
+  doubleTextContainer: {
+    flexDirection: 'row'
+  },
+  leftText: {
+    flex: 1,
+    fontSize: 14,
+    textAlign: 'left'
+  },
+  rightText: {
+    fontSize: 14,
+    textAlign: 'right',
+    marginLeft: 10
+  },
+  name: {
+    fontSize: 17,
+    fontWeight: '500',
+    marginTop: 5,
+    marginBottom: 5
   }
 });
 

@@ -11,6 +11,7 @@ var DayView = require('../views/DayView');
 var STUB_DATA = [
   {
     date: '02.04.2016',
+    dayOfWeek: 'Понедельник',
     lessons: [
       {
         number: 1,
@@ -39,6 +40,7 @@ var STUB_DATA = [
   },
   {
     date: '03.04.2016',
+    dayOfWeek: 'Вторник',
     lessons: [
       {
         number: 1,
