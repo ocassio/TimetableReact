@@ -3,7 +3,7 @@ import React, {
   StyleSheet,
   View,
   ListView,
-  Text
+  TabBarIOS
 } from 'react-native';
 
 var DayView = require('../views/DayView');
@@ -66,6 +66,35 @@ var STUB_DATA = [
         }
       }
     ]
+  },
+  {
+    date: '04.04.2016',
+    dayOfWeek: 'Среда',
+    lessons: [
+      {
+        number: 1,
+        name: 'Технологии сети Internet',
+        teacher: 'Попов А.А.',
+        room: 'T407',
+        type: 'лб',
+        time: {
+          from: '9:00',
+          to: '10:35'
+        },
+        note: '2 подгруппа'
+      },
+      {
+        number: 2,
+        name: 'Конструирование программного обеспечения',
+        teacher: 'Яницкая Т.С.',
+        room: 'T412',
+        type: 'л',
+        time: {
+          from: '10:45',
+          to: '12:20'
+        }
+      }
+    ]
   }
 ];
 
@@ -88,11 +117,17 @@ class TimetableScreen extends Component {
 
   render() {
     return (
-      <ListView
-        style={styles.container}
-        dataSource={this.state.dataSource}
-        renderRow={this.renderRow}
-      />
+      <View style={styles.container}>
+        <ListView
+          style={styles.list}
+          dataSource={this.state.dataSource}
+          renderRow={this.renderRow}
+        />
+        <TabBarIOS style={styles.tabBar}>
+          <TabBarIOS.Item title="Критерий"/>
+          <TabBarIOS.Item title="Дата"/>
+        </TabBarIOS>
+      </View>
     );
   }
 
@@ -107,7 +142,15 @@ class TimetableScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    flexDirection: 'column',
+    alignItems: 'stretch'
+  },
+  list: {
+    flex: 1
+  },
+  tabBar: {
+    flex: 0,
+    height: 50
   }
 });
 
