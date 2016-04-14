@@ -6,6 +6,8 @@ import React, {
   Text
 } from 'react-native';
 
+var DayView = require('../views/DayView');
+
 var STUB_DATA = [
   {
     date: '02.04.2016',
@@ -87,8 +89,14 @@ class TimetableScreen extends Component {
       <ListView
         style={styles.container}
         dataSource={this.state.dataSource}
-        renderRow={(day) => <Text>{day.date}</Text>}
+        renderRow={this.renderRow}
       />
+    );
+  }
+
+  renderRow(day) {
+    return (
+      <DayView day={day} />
     );
   }
 

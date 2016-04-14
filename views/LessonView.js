@@ -10,7 +10,7 @@ class LessonView extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.number}>
-          1
+          {this.props.lesson.number}
         </Text>
         <View style={styles.rightContainer}>
         </View>
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
     backgroundColor: 'white',
   },
   number: {
