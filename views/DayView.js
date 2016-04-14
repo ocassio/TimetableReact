@@ -59,8 +59,7 @@ class DayView extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#eeeeee',
+    flex: 1
   },
   separator: {
     height: 1,
@@ -68,7 +67,8 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    padding: 10
+    padding: 10,
+    backgroundColor: '#eeeeee'
   },
   dayOfWeek: {
     flex: 1,

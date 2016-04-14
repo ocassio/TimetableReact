@@ -2,21 +2,30 @@ import React, {
   AppRegistry,
   Component,
   StyleSheet,
-  NavigatorIOS
+  View,
+  NavigatorIOS,
+  StatusBar
 } from 'react-native';
 
 var TimetableScreen = require('./screens/TimetableScreen');
 
 class TimetableReact extends Component {
   render() {
+    // StatusBar.barStyle = 'light-content';
     return (
-      <NavigatorIOS
-        style={styles.container}
-        initialRoute={{
-          title: 'Расписание',
-          component: TimetableScreen
-        }}
-      />
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content"/>
+        <NavigatorIOS
+          style={styles.nav}
+          initialRoute={{
+            title: 'Расписание',
+            component: TimetableScreen
+          }}
+          barTintColor='#303F9F'
+          tintColor='#fff'
+          titleTextColor="#fff"
+        />
+      </View>
     );
   }
 }
@@ -24,7 +33,10 @@ class TimetableReact extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    flexDirection: 'column'
+  },
+  nav: {
+    flex: 1
   }
 });
 
