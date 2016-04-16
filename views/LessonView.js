@@ -8,6 +8,7 @@ import React, {
 class LessonView extends Component {
   render() {
     var lesson = this.props.lesson;
+    var note = lesson.note ? (<Text style={styles.note}>{lesson.note}</Text>) : null;
 
     return (
       <View style={styles.container}>
@@ -26,6 +27,7 @@ class LessonView extends Component {
           <Text style={styles.name}>
             {lesson.name}
           </Text>
+          {note}
           <View style={styles.doubleTextContainer}>
             <Text style={styles.leftText}>
               {lesson.teacher}
@@ -50,6 +52,7 @@ const styles = StyleSheet.create({
   },
   number: {
     width: 20,
+    textAlign: 'center',
     fontSize: 28,
     fontWeight: '500'
   },
@@ -75,6 +78,10 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '500',
     marginTop: 5,
+    marginBottom: 5
+  },
+  note: {
+    fontSize: 14,
     marginBottom: 5
   }
 });

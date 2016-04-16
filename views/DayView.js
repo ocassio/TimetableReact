@@ -67,8 +67,11 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    padding: 10,
-    backgroundColor: '#eeeeee'
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    backgroundColor: '#efeff4'
   },
   dayOfWeek: {
     flex: 1,
