@@ -10,7 +10,6 @@ import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav'
 
 var Icon = require('react-native-vector-icons/Ionicons');
 var ControlledRefreshableListView = require('react-native-refreshable-listview/lib/ControlledRefreshableListView');
-var DayView = require('../views/DayView');
 var DataProvider = require('../providers/DataProvider');
 
 class CriteriaScreen extends Component {
@@ -52,6 +51,23 @@ class CriteriaScreen extends Component {
           onRefresh={this.loadCriteria.bind(this)}
           refreshDescription="Загружаем критерии..."
         />
+        <TabBarIOS style={styles.tabBar}>
+          <Icon.TabBarItem
+            title="Группы"
+            iconName="ios-people-outline"
+            selectedIconName="ios-people"
+          />
+          <Icon.TabBarItem
+            title="Преподаватели"
+            iconName="ios-person-outline"
+            selectedIconName="ios-person"
+          />
+          <Icon.TabBarItem
+            title="Аудитории"
+            iconName="ios-home-outline"
+            selectedIconName="ios-home"
+          />
+        </TabBarIOS>
       </View>
     );
   }
@@ -73,15 +89,9 @@ const styles = StyleSheet.create({
   list: {
     flex: 1
   },
-  toolbar: {
-    height: 44,
-    backgroundColor: '#f8f8f8',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20
-  },
-  spacer: {
-    flex: 1
+  tabBar: {
+    flex: 0,
+    height: 50
   }
 });
 
