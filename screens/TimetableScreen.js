@@ -6,6 +6,8 @@ import React, {
   TabBarIOS
 } from 'react-native';
 
+import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav'
+
 var DayView = require('../views/DayView');
 
 var STUB_DATA = [
@@ -123,10 +125,20 @@ class TimetableScreen extends Component {
           dataSource={this.state.dataSource}
           renderRow={this.renderRow}
         />
-        <TabBarIOS style={styles.tabBar}>
-          <TabBarIOS.Item title="Критерий"/>
-          <TabBarIOS.Item title="Дата"/>
-        </TabBarIOS>
+        <View style={styles.toolbar}>
+          <NavButton>
+            <NavButtonText>
+              Критерий
+            </NavButtonText>
+          </NavButton>
+          <View style={styles.spacer}>
+          </View>
+          <NavButton>
+            <NavButtonText>
+              Дата
+            </NavButtonText>
+          </NavButton>
+        </View>
       </View>
     );
   }
@@ -148,9 +160,15 @@ const styles = StyleSheet.create({
   list: {
     flex: 1
   },
-  tabBar: {
-    flex: 0,
-    height: 50
+  toolbar: {
+    height: 44,
+    backgroundColor: '#eeeeee',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10
+  },
+  spacer: {
+    flex: 1
   }
 });
 
