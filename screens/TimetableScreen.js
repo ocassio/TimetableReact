@@ -9,96 +9,7 @@ import React, {
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav'
 
 var DayView = require('../views/DayView');
-
-var STUB_DATA = [
-  {
-    date: '02.04.2016',
-    dayOfWeek: 'Понедельник',
-    lessons: [
-      {
-        number: 1,
-        name: 'Технологии сети Internet',
-        teacher: 'Попов А.А.',
-        room: 'T407',
-        type: 'лб',
-        time: {
-          from: '9:00',
-          to: '10:35'
-        },
-        note: '1 подгруппа'
-      },
-      {
-        number: 2,
-        name: 'Конструирование программного обеспечения',
-        teacher: 'Яницкая Т.С.',
-        room: 'T412',
-        type: 'л',
-        time: {
-          from: '10:45',
-          to: '12:20'
-        }
-      }
-    ]
-  },
-  {
-    date: '03.04.2016',
-    dayOfWeek: 'Вторник',
-    lessons: [
-      {
-        number: 1,
-        name: 'Технологии сети Internet',
-        teacher: 'Попов А.А.',
-        room: 'T407',
-        type: 'лб',
-        time: {
-          from: '9:00',
-          to: '10:35'
-        },
-        note: '2 подгруппа'
-      },
-      {
-        number: 2,
-        name: 'Конструирование программного обеспечения',
-        teacher: 'Яницкая Т.С.',
-        room: 'T412',
-        type: 'л',
-        time: {
-          from: '10:45',
-          to: '12:20'
-        }
-      }
-    ]
-  },
-  {
-    date: '04.04.2016',
-    dayOfWeek: 'Среда',
-    lessons: [
-      {
-        number: 1,
-        name: 'Технологии сети Internet',
-        teacher: 'Попов А.А.',
-        room: 'T407',
-        type: 'лб',
-        time: {
-          from: '9:00',
-          to: '10:35'
-        },
-        note: '2 подгруппа'
-      },
-      {
-        number: 2,
-        name: 'Конструирование программного обеспечения',
-        teacher: 'Яницкая Т.С.',
-        room: 'T412',
-        type: 'л',
-        time: {
-          from: '10:45',
-          to: '12:20'
-        }
-      }
-    ]
-  }
-];
+var DataProvider = require('../providers/DataProvider');
 
 class TimetableScreen extends Component {
 
@@ -110,11 +21,12 @@ class TimetableScreen extends Component {
   }
 
   componentDidMount() {
-    this.setState({dataSource: this.getDataSource()});
+    DataProvider.getTimetable(0, '473', '02.04.2016', '10.04.2016')
+      .then((days) => this.setState({dataSource: this.getDataSource(days)}));
   }
 
-  getDataSource() {
-    return this.state.dataSource.cloneWithRows(STUB_DATA);
+  getDataSource(data) {
+    return this.state.dataSource.cloneWithRows(data);
   }
 
   render() {
