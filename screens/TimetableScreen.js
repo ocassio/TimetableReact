@@ -8,6 +8,7 @@ import React, {
 
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav'
 
+var ControlledRefreshableListView = require('react-native-refreshable-listview/lib/ControlledRefreshableListView');
 var DayView = require('../views/DayView');
 var DataProvider = require('../providers/DataProvider');
 
@@ -16,26 +17,38 @@ class TimetableScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+      dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+      loading: true
     }
   }
 
   componentDidMount() {
-    DataProvider.getTimetable(0, '473', '02.04.2016', '10.04.2016')
-      .then((days) => this.setState({dataSource: this.getDataSource(days)}));
+    this.loadTimetable();
   }
 
   getDataSource(data) {
     return this.state.dataSource.cloneWithRows(data);
   }
 
+  loadTimetable() {
+    this.setState({loading: true});
+    return DataProvider.getTimetable(0, '473', '02.04.2016', '10.04.2016')
+      .then((days) => this.setState({
+        dataSource: this.getDataSource(days),
+        loading: false
+      }));
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <ListView
+        <ControlledRefreshableListView
+          isRefreshing={this.state.loading}
           style={styles.list}
           dataSource={this.state.dataSource}
           renderRow={this.renderRow}
+          onRefresh={this.loadTimetable.bind(this)}
+          refreshDescription="Загружаем расписание..."
         />
         <View style={styles.toolbar}>
           <NavButton>
