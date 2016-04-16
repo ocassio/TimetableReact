@@ -2,12 +2,12 @@ import React, {
   Component,
   StyleSheet,
   View,
-  ListView,
   TabBarIOS
 } from 'react-native';
 
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav'
 
+var Icon = require('react-native-vector-icons/Ionicons');
 var ControlledRefreshableListView = require('react-native-refreshable-listview/lib/ControlledRefreshableListView');
 var DayView = require('../views/DayView');
 var DataProvider = require('../providers/DataProvider');
@@ -17,7 +17,7 @@ class TimetableScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+      dataSource: new ControlledRefreshableListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
       loading: true
     }
   }
@@ -52,16 +52,18 @@ class TimetableScreen extends Component {
         />
         <View style={styles.toolbar}>
           <NavButton>
-            <NavButtonText>
-              Критерий
-            </NavButtonText>
+            <Icon
+              name="ios-people-outline"
+              size={30}
+              color="#2a83df"/>
           </NavButton>
           <View style={styles.spacer}>
           </View>
           <NavButton>
-            <NavButtonText>
-              Дата
-            </NavButtonText>
+            <Icon
+              name="ios-calendar-outline"
+              size={30}
+              color="#2a83df"/>
           </NavButton>
         </View>
       </View>
@@ -90,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10
+    padding: 20
   },
   spacer: {
     flex: 1
