@@ -14,12 +14,16 @@ var ControlledRefreshableListView = require('react-native-refreshable-listview/l
 var DayView = require('../views/DayView');
 var DataProvider = require('../providers/DataProvider');
 
+const emptyDataSource = new ControlledRefreshableListView.DataSource({
+  rowHasChanged: (r1, r2) => r1 !== r2
+});
+
 class TimetableScreen extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: new ControlledRefreshableListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+      dataSource: emptyDataSource,
       loading: false
     }
   }
@@ -33,7 +37,7 @@ class TimetableScreen extends Component {
   }
 
   getDataSource(data) {
-    return this.state.dataSource.cloneWithRows(data);
+    return data && data.length > 0 ? this.state.dataSource.cloneWithRows(data) : emptyDataSource;
   }
 
   loadTimetable() {

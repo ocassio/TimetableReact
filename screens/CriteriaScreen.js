@@ -35,7 +35,7 @@ class CriteriaScreen extends Component {
   }
 
   getDataSource(data) {
-    return data ? this.state.dataSource.cloneWithRows(data) : emptyDataSource;
+    return data && data.length > 0 ? this.state.dataSource.cloneWithRows(data) : emptyDataSource;
   }
 
   setType(type) {
