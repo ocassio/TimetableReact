@@ -7,8 +7,6 @@ import React, {
   Alert
 } from 'react-native';
 
-import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav'
-
 var Icon = require('react-native-vector-icons/Ionicons');
 var ControlledRefreshableListView = require('react-native-refreshable-listview/lib/ControlledRefreshableListView');
 var DataProvider = require('../providers/DataProvider');

@@ -6,9 +6,10 @@ import React, {
   NetInfo
 } from 'react-native';
 
-import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav'
+import {NavButton} from 'react-native-nav'
 
 var CriteriaScreen = require('./CriteriaScreen');
+var DateScreen = require('./DateScreen');
 var Icon = require('react-native-vector-icons/Ionicons');
 var ControlledRefreshableListView = require('react-native-refreshable-listview/lib/ControlledRefreshableListView');
 var DayView = require('../views/DayView');
@@ -73,7 +74,10 @@ class TimetableScreen extends Component {
   }
 
   toCalendarScreen() {
-
+    this.props.navigator.push({
+      title: 'Выбор даты',
+      component: DateScreen
+    });
   }
 
   render() {
