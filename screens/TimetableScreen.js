@@ -1,7 +1,9 @@
 import React, {
   Component,
   StyleSheet,
-  View
+  View,
+  Alert,
+  NetInfo
 } from 'react-native';
 
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav'
@@ -18,12 +20,16 @@ class TimetableScreen extends Component {
     super(props);
     this.state = {
       dataSource: new ControlledRefreshableListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
-      loading: true
+      loading: false
     }
   }
 
   componentDidMount() {
-    this.loadTimetable();
+    NetInfo.isConnected.fetch().then((isConnected) => {
+      if (isConnected) {
+        this.loadTimetable();
+      }
+    });
   }
 
   getDataSource(data) {
@@ -36,7 +42,13 @@ class TimetableScreen extends Component {
       .then((days) => this.setState({
         dataSource: this.getDataSource(days),
         loading: false
-      }));
+      }))
+      .catch(() => {
+        if (this.state.loading) {
+          Alert.alert('Не удалось загрузить данные');
+          this.setState({loading: false});
+        }
+      });
   }
 
   toCriteriaScreen() {
