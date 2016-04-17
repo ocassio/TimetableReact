@@ -43,16 +43,26 @@ class TimetableScreen extends Component {
   loadTimetable() {
     this.setState({loading: true});
     return DataProvider.getTimetable(0, '473', '02.04.2016', '10.04.2016')
-      .then((days) => this.setState({
-        dataSource: this.getDataSource(days),
-        loading: false
-      }))
-      .catch(() => {
-        if (this.state.loading) {
-          Alert.alert('Не удалось загрузить данные');
-          this.setState({loading: false});
-        }
-      });
+      .then(this.onTimetableLoaded.bind(this))
+      .catch(this.onNetworkError.bind(this));
+  }
+
+  onTimetableLoaded(days) {
+    this.setState({
+      dataSource: this.getDataSource(days),
+      loading: false
+    });
+  }
+
+  onNetworkError() {
+    if (!this.alertsLocked) {
+      this.alertsLocked = true;
+      Alert.alert('Не удалось загрузить данные', null, [{
+        text: 'OK',
+        onPress: () => this.alertsLocked = false
+      }]);
+    }
+    this.setState({loading: false});
   }
 
   toCriteriaScreen() {

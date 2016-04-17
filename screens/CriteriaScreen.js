@@ -52,11 +52,11 @@ class CriteriaScreen extends Component {
   loadCriteria() {
     this.setState({loading: true});
     return DataProvider.getCriteria(this.state.type)
-      .then(this.onCriteriaLoad.bind(this))
+      .then(this.onCriteriaLoaded.bind(this))
       .catch(this.onNetworkError.bind(this));
   }
 
-  onCriteriaLoad(criteria) {
+  onCriteriaLoaded(criteria) {
     this.setState({
       dataSource: this.getDataSource(criteria),
       loading: false
@@ -65,8 +65,14 @@ class CriteriaScreen extends Component {
   }
 
   onNetworkError() {
+    if (!this.alertsLocked) {
+      this.alertsLocked = true;
+      Alert.alert('Не удалось загрузить данные', null, [{
+        text: 'OK',
+        onPress: () => this.alertsLocked = false
+      }]);
+    }
     this.setState({loading: false});
-    Alert.alert('Не удалось загрузить данные');
   }
 
   render() {
