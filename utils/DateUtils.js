@@ -11,6 +11,10 @@ class DateUtils {
     return moment(string, DATE_FORMAT, true).isValid();
   }
 
+  static toString(date) {
+    return moment(date).format(DATE_FORMAT);
+  }
+
   static getDayOfWeek(string) {
     var dayOfWeek = moment(string, DATE_FORMAT, true).format('dddd');
     dayOfWeek = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
