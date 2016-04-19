@@ -14,6 +14,7 @@ var Icon = require('react-native-vector-icons/Ionicons');
 var ControlledRefreshableListView = require('react-native-refreshable-listview/lib/ControlledRefreshableListView');
 var DayView = require('../views/DayView');
 var DataProvider = require('../providers/DataProvider');
+var StorageProvider = require('../providers/StorageProvider');
 
 const emptyDataSource = new ControlledRefreshableListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2
@@ -30,6 +31,9 @@ class TimetableScreen extends Component {
   }
 
   componentDidMount() {
+    StorageProvider.getTimetable().then((timetable) => {
+      this.setState({dataSource: this.getDataSource(timetable)});
+    });
     NetInfo.isConnected.fetch().then((isConnected) => {
       if (isConnected) {
         this.loadTimetable();
@@ -43,12 +47,13 @@ class TimetableScreen extends Component {
 
   loadTimetable() {
     this.setState({loading: true});
-    return DataProvider.getTimetable(0, '473', '02.04.2016', '10.04.2016')
+    return DataProvider.getTimetable(0, '473', '18.04.2016', '30.04.2016')
       .then(this.onTimetableLoaded.bind(this))
       .catch(this.onNetworkError.bind(this));
   }
 
   onTimetableLoaded(days) {
+    StorageProvider.setTimetable(days);
     this.setState({
       dataSource: this.getDataSource(days),
       loading: false
