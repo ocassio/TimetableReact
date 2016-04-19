@@ -100,6 +100,7 @@ class DateScreen extends Component {
         <Text style={styles.header}>Выберите дату</Text>
         <TouchableHighlight
           onPress={() => this.setState({fromSelected: true})}
+          underlayColor='#eeeeee'
         >
           <View style={styles.customDateContainer}>
             <Text style={styles.customDateLabel}>От</Text>
@@ -109,6 +110,7 @@ class DateScreen extends Component {
         <View style={styles.separator}/>
         <TouchableHighlight
           onPress={() => this.setState({toSelected: true})}
+          underlayColor='#eeeeee'
         >
           <View style={styles.customDateContainer}>
             <Text style={styles.customDateLabel}>До</Text>
@@ -134,7 +136,8 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 20,
     paddingRight: 20,
-    backgroundColor: '#eeeeee'
+    backgroundColor: '#eeeeee',
+    fontWeight: '300'
   },
   dateOptionsContainer: {
     margin: 10,
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
   },
   customDateLabel: {
     marginRight: 10,
-    fontWeight: '500'
+    fontWeight: '400'
   },
   customDateValue: {
     flex: 1,

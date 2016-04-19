@@ -6,7 +6,7 @@ const CRITERION_KEY = 'criterion';
 const DATE_RANGE_OPTION_KEY = 'dateRangeOption';
 const CUSTOM_DATE_RANGE_KEY = 'customDateRange';
 
-var getObject = (key) => {
+function getObject(key) {
   return new Promise((resolve, reject) => {
     AsyncStorage.getItem(key, (err, result) => {
       if (err) {
@@ -17,7 +17,7 @@ var getObject = (key) => {
   });
 }
 
-var setObject = (key, value) => {
+function setObject(key, value) {
   AsyncStorage.setItem(key, JSON.stringify(value));
 };
 

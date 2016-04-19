@@ -32,7 +32,9 @@ class TimetableScreen extends Component {
 
   componentDidMount() {
     StorageProvider.getTimetable().then((timetable) => {
-      this.setState({dataSource: this.getDataSource(timetable)});
+      if (!this.timetableHasBeenLoaded) {
+        this.setState({dataSource: this.getDataSource(timetable)});
+      }
     });
     NetInfo.isConnected.fetch().then((isConnected) => {
       if (isConnected) {
@@ -42,17 +44,22 @@ class TimetableScreen extends Component {
   }
 
   getDataSource(data) {
-    return data && data.length > 0 ? this.state.dataSource.cloneWithRows(data) : emptyDataSource;
+    return data && data.length > 0 ? emptyDataSource.cloneWithRows(data) : emptyDataSource;
   }
 
   loadTimetable() {
     this.setState({loading: true});
-    return DataProvider.getTimetable(0, '473', '18.04.2016', '30.04.2016')
-      .then(this.onTimetableLoaded.bind(this))
-      .catch(this.onNetworkError.bind(this));
+    StorageProvider.getCriteriaType().then((criteriaType) => {
+      StorageProvider.getCriterion().then((criterion) => {
+        DataProvider.getTimetable(criteriaType, criterion.id, '15.04.2016', '30.04.2016')
+          .then(this.onTimetableLoaded.bind(this))
+          .catch(this.onNetworkError.bind(this));
+      });
+    });
   }
 
   onTimetableLoaded(days) {
+    this.timetableHasBeenLoaded = true;
     StorageProvider.setTimetable(days);
     this.setState({
       dataSource: this.getDataSource(days),

@@ -5,38 +5,46 @@ import React, {
   Text
 } from 'react-native';
 
+var Icon = require('react-native-vector-icons/Ionicons');
+
 class LessonView extends Component {
   render() {
     var lesson = this.props.lesson;
-    var note = lesson.note ? (<Text style={styles.note}>{lesson.note}</Text>) : null;
 
     return (
       <View style={styles.container}>
-        <Text style={styles.number}>
-          {lesson.number}
-        </Text>
+        <View>
+          <Text style={styles.number}>{lesson.number}</Text>
+          <Text style={styles.time}>{lesson.time.from}</Text>
+          <Text style={styles.time}>{lesson.time.to}</Text>
+        </View>
         <View style={styles.rightContainer}>
-          <View style={styles.doubleTextContainer}>
-            <Text style={styles.leftText}>
-              {lesson.time.from} - {lesson.time.to}
-            </Text>
-            <Text style={styles.rightText}>
-              {lesson.room}
-            </Text>
-          </View>
           <Text style={styles.name}>
             {lesson.name}
           </Text>
-          {note}
-          <View style={styles.doubleTextContainer}>
-            <Text style={styles.leftText}>
-              {lesson.teacher}
-            </Text>
-            <Text style={styles.rightText}>
-              {lesson.type}
-            </Text>
+          <View style={styles.row}>
+            {this.renderText('ios-location', lesson.room, styles.stretched)}
+            {this.renderText('ios-flask', lesson.type, styles.stretched)}
           </View>
+          {this.renderText('ios-person', lesson.teacher)}
+          {this.renderText('ios-people', lesson.group)}
+          {this.renderText('document-text', lesson.note)}
         </View>
+      </View>
+    );
+  }
+
+  renderText(icon, value, style) {
+    if (!value) return;
+
+    return (
+      <View style={[styles.row, style]}>
+        <Icon
+          style={styles.icon}
+          name={icon}
+          size={15}
+         />
+        <Text style={styles.text}>{value}</Text>
       </View>
     );
   }
@@ -46,44 +54,54 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: 'white',
     padding: 20
   },
+  leftContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
   number: {
-    width: 20,
+    width: 35,
     textAlign: 'center',
     fontSize: 28,
-    fontWeight: '500'
+    fontWeight: '300',
+    marginBottom: 7
+  },
+  time: {
+    width: 35,
+    fontSize: 12,
+    fontWeight: '300',
+    textAlign: 'center'
   },
   rightContainer: {
     flex: 1,
     flexDirection: 'column',
     marginLeft: 20
   },
-  doubleTextContainer: {
+  row: {
     flexDirection: 'row'
-  },
-  leftText: {
-    flex: 1,
-    fontSize: 14,
-    textAlign: 'left'
-  },
-  rightText: {
-    fontSize: 14,
-    textAlign: 'right',
-    marginLeft: 10
   },
   name: {
     fontSize: 17,
-    fontWeight: '500',
-    marginTop: 5,
-    marginBottom: 5
+    marginBottom: 10
   },
-  note: {
-    fontSize: 14,
-    marginBottom: 5
-  }
+  text: {
+    flex: 1,
+    fontSize: 13,
+    marginBottom: 5,
+    fontWeight: '300'
+  },
+  icon: {
+    marginRight: 10,
+    width: 15,
+    textAlign: 'center'
+  },
+  stretched: {
+    flex: 1
+  },
+
 });
 
 module.exports = LessonView;

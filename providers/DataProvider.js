@@ -22,7 +22,7 @@ const TIME_RANGES_SATURADAY = [
   {from: '16:05', to: '17:35'}
 ];
 
-var parseTimetable = (html) => {
+function parseTimetable(html) {
   var $ = cheerio.load(html);
   var elements = $('#send td.hours');
 
@@ -51,7 +51,8 @@ var parseTimetable = (html) => {
         for (var j = 0; j < COL_COUNT; j++) {
           var child = elements[i].firstChild;
           if (child) {
-            params.push(child.data);
+            var data = child.data.trim();
+            params.push(data && data.length > 0 ? data : '-');
           }
           i++;
         }
@@ -80,7 +81,7 @@ var parseTimetable = (html) => {
   return days;
 }
 
-var parseCriteria = (html) => {
+function parseCriteria(html) {
   var $ = cheerio.load(html);
   var options = $('#vr option');
 

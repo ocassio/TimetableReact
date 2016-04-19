@@ -2,6 +2,7 @@ import React, {
   Component,
   StyleSheet,
   View,
+  TouchableHighlight,
   Text,
   TabBarIOS,
   Alert
@@ -10,6 +11,7 @@ import React, {
 var Icon = require('react-native-vector-icons/Ionicons');
 var ControlledRefreshableListView = require('react-native-refreshable-listview/lib/ControlledRefreshableListView');
 var DataProvider = require('../providers/DataProvider');
+var StorageProvider = require('../providers/StorageProvider');
 
 const emptyDataSource = new ControlledRefreshableListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2
@@ -29,11 +31,13 @@ class CriteriaScreen extends Component {
   }
 
   componentDidMount() {
-    this.setType(this.state.type);
+    StorageProvider.getCriteriaType().then((type) => {
+      this.setType(type ? type : this.state.type);
+    });
   }
 
   getDataSource(data) {
-    return data && data.length > 0 ? this.state.dataSource.cloneWithRows(data) : emptyDataSource;
+    return data && data.length > 0 ? emptyDataSource.cloneWithRows(data) : emptyDataSource;
   }
 
   setType(type) {
@@ -73,6 +77,12 @@ class CriteriaScreen extends Component {
     this.setState({loading: false});
   }
 
+  selectCriterion(criterion) {
+    StorageProvider.setCriteriaType(this.state.type);
+    StorageProvider.setCriterion(criterion);
+    this.props.navigator.pop();
+  }
+
   render() {
     return (
       <TabBarIOS>
@@ -85,7 +95,7 @@ class CriteriaScreen extends Component {
           <ControlledRefreshableListView
             isRefreshing={this.state.loading}
             dataSource={this.state.dataSource}
-            renderRow={this.renderRow}
+            renderRow={this.renderRow.bind(this)}
             renderSeparator={this.renderSeparator}
             onRefresh={this.loadCriteria.bind(this)}
             refreshDescription="Загружаем группы..."
@@ -100,7 +110,7 @@ class CriteriaScreen extends Component {
           <ControlledRefreshableListView
             isRefreshing={this.state.loading}
             dataSource={this.state.dataSource}
-            renderRow={this.renderRow}
+            renderRow={this.renderRow.bind(this)}
             renderSeparator={this.renderSeparator}
             onRefresh={this.loadCriteria.bind(this)}
             refreshDescription="Загружаем преподавателей..."
@@ -115,7 +125,7 @@ class CriteriaScreen extends Component {
           <ControlledRefreshableListView
             isRefreshing={this.state.loading}
             dataSource={this.state.dataSource}
-            renderRow={this.renderRow}
+            renderRow={this.renderRow.bind(this)}
             renderSeparator={this.renderSeparator}
             onRefresh={this.loadCriteria.bind(this)}
             refreshDescription="Загружаем аудитории..."
@@ -127,7 +137,12 @@ class CriteriaScreen extends Component {
 
   renderRow(criterion) {
     return (
-      <Text style={styles.criterion}>{criterion.name}</Text>
+      <TouchableHighlight
+        onPress={this.selectCriterion.bind(this, criterion)}
+        underlayColor='#eeeeee'
+      >
+        <Text style={styles.criterion}>{criterion.name}</Text>
+      </TouchableHighlight>
     );
   }
 

@@ -7,6 +7,7 @@ import React, {
 } from 'react-native';
 
 var LessonView = require('./LessonView');
+var DateUtils = require('../utils/DateUtils');
 
 class DayView extends Component {
 
@@ -21,13 +22,22 @@ class DayView extends Component {
   render() {
     var day = this.props.day;
 
+    var headerStyles = [styles.header];
+    var dayOfWeekStyles = [styles.dayOfWeek];
+    var dateStyles = [styles.date];
+    if (DateUtils.isToday(day.date)) {
+      headerStyles.push(styles.todayBackground);
+      dayOfWeekStyles.push(styles.today);
+      dateStyles.push(styles.today);
+    }
+
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.dayOfWeek}>
+        <View style={headerStyles}>
+          <Text style={dayOfWeekStyles}>
             {day.dayOfWeek}
           </Text>
-          <Text style={styles.date}>
+          <Text style={dateStyles}>
             {day.date}
           </Text>
         </View>
@@ -76,13 +86,22 @@ const styles = StyleSheet.create({
   dayOfWeek: {
     flex: 1,
     fontSize: 16,
-    textAlign: 'left'
+    textAlign: 'left',
+    fontWeight: '300'
   },
   date: {
     fontSize: 16,
     textAlign: 'right',
-    marginLeft: 10
+    marginLeft: 10,
+    fontWeight: '300'
   },
+  today: {
+    color: '#ffffff',
+    fontWeight: '400'
+  },
+  todayBackground: {
+    backgroundColor: '#EC407A'
+  }
 });
 
 module.exports = DayView;
