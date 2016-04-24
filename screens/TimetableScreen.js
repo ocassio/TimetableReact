@@ -51,9 +51,13 @@ class TimetableScreen extends Component {
     this.setState({loading: true});
     StorageProvider.getCriteriaType().then((criteriaType) => {
       StorageProvider.getCriterion().then((criterion) => {
-        DataProvider.getTimetable(criteriaType, criterion.id, '15.04.2016', '30.04.2016')
-          .then(this.onTimetableLoaded.bind(this))
-          .catch(this.onNetworkError.bind(this));
+        if (criterion) {
+          DataProvider.getTimetable(criteriaType, criterion.id, '15.04.2016', '30.04.2016')
+            .then(this.onTimetableLoaded.bind(this))
+            .catch(this.onNetworkError.bind(this));
+        } else {
+          this.toCriteriaScreen();
+        }
       });
     });
   }

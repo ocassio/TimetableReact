@@ -32,7 +32,10 @@ class StorageProvider {
   }
 
   static getCriteriaType() {
-    return getObject(CRITERIA_TYPE_KEY);
+    return getObject(CRITERIA_TYPE_KEY)
+      .then((type) => {
+        return type ? type : 0
+      });
   }
 
   static setCriteriaType(type) {

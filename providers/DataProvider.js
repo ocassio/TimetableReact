@@ -1,5 +1,6 @@
 var cheerio = require('cheerio-without-node-native');
 var DateUtils = require('../utils/DateUtils');
+var EncodingUtils = require('../utils/EncodingUtils');
 
 const TIMETABLE_URL = "http://www.tolgas.ru/services/raspisanie/";
 const COL_COUNT = 7;
@@ -99,18 +100,30 @@ function parseCriteria(html) {
 class DataProvider {
 
   static getTimetable(criteriaType, criterion, from, to) {
-    var params = new FormData();
-    params.append('rel', criteriaType);
-    params.append('vr', criterion);
-    params.append('from', from);
-    params.append('to', to);
-    params.append('submit_button', 'ПОКАЗАТЬ');
+    return new Promise(function(resolve, reject) {
+      var params = '';
+      params = params.concat(
+        'rel=', criteriaType, '&',
+        'vr=', EncodingUtils.unicodeToWin1251(criterion), '&',
+        'from=', from, '&',
+        'to=', to, '&',
+        'submit_button=', 'ПОКАЗАТЬ'
+      );
 
-    return fetch(TIMETABLE_URL, {
-      method: 'POST',
-      body: params
-    }).then((response) => response.text())
-      .then(parseTimetable.bind(this));
+      var request = new XMLHttpRequest();
+      request.open('POST', TIMETABLE_URL);
+      request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=windows-1251');
+      request.onreadystatechange = () => {
+        if (request.readyState != 4) return;
+
+        if (request.status == 200) {
+          resolve(parseTimetable(request.responseText));
+        } else {
+          reject();
+        }
+      }
+      request.send(params);
+    });
   }
 
   static getCriteria(criteriaType) {
