@@ -11,14 +11,23 @@ function getObject(key) {
     AsyncStorage.getItem(key, (err, result) => {
       if (err) {
         reject(err);
+      } else {
+        resolve(JSON.parse(result));
       }
-      resolve(JSON.parse(result));
     });
   });
 }
 
 function setObject(key, value) {
-  AsyncStorage.setItem(key, JSON.stringify(value));
+  return new Promise((resolve, reject) => {
+    AsyncStorage.setItem(key, JSON.stringify(value), (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(value);
+      }
+    });
+  });
 };
 
 class StorageProvider {
@@ -28,7 +37,7 @@ class StorageProvider {
   }
 
   static setTimetable(timetable) {
-    setObject(TIMETABLE_KEY, timetable);
+    return setObject(TIMETABLE_KEY, timetable);
   }
 
   static getCriteriaType() {
@@ -39,7 +48,7 @@ class StorageProvider {
   }
 
   static setCriteriaType(type) {
-    setObject(CRITERIA_TYPE_KEY, type);
+    return setObject(CRITERIA_TYPE_KEY, type);
   }
 
   static getCriterion() {
@@ -47,7 +56,7 @@ class StorageProvider {
   }
 
   static setCriterion(criterion) {
-    setObject(CRITERION_KEY, criterion);
+    return setObject(CRITERION_KEY, criterion);
   }
 
   static getDateRangeOption() {
@@ -55,7 +64,7 @@ class StorageProvider {
   }
 
   static setDateRangeOption(option) {
-    setObject(DATE_RANGE_OPTION_KEY, option);
+    return setObject(DATE_RANGE_OPTION_KEY, option);
   }
 
   static getCustomDateRange() {
@@ -63,7 +72,7 @@ class StorageProvider {
   }
 
   static setCustomDateRange(dateRange) {
-    setObject(CUSTOM_DATE_RANGE_KEY, dateRange);
+    return setObject(CUSTOM_DATE_RANGE_KEY, dateRange);
   }
 
 }

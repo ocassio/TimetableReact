@@ -21,6 +21,7 @@ class DayView extends Component {
 
   render() {
     var day = this.props.day;
+    this.state.dataSource = this.state.dataSource.cloneWithRows(day.lessons);
 
     var headerStyles = [styles.header];
     var dayOfWeekStyles = [styles.dayOfWeek];

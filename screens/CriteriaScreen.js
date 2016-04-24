@@ -78,9 +78,10 @@ class CriteriaScreen extends Component {
   }
 
   selectCriterion(criterion) {
-    StorageProvider.setCriteriaType(this.state.type);
-    StorageProvider.setCriterion(criterion);
-    this.props.navigator.pop();
+    Promise.all([
+      StorageProvider.setCriteriaType(this.state.type),
+      StorageProvider.setCriterion(criterion)
+    ]).then(() => this.props.navigator.pop());
   }
 
   render() {
