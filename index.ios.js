@@ -7,9 +7,15 @@ import React, {
   StatusBar
 } from 'react-native';
 
+var EventEmitter = require('EventEmitter');
 var TimetableScreen = require('./screens/TimetableScreen');
 
 class TimetableReact extends Component {
+
+  componentWillMount() {
+    this.eventEmitter = new EventEmitter();
+  }
+
   render() {
     // StatusBar.barStyle = 'light-content';
     return (
@@ -19,7 +25,10 @@ class TimetableReact extends Component {
           style={styles.nav}
           initialRoute={{
             title: 'Расписание',
-            component: TimetableScreen
+            component: TimetableScreen,
+            passProps: {
+              events: this.eventEmitter
+            }
           }}
           barTintColor='#303F9F'
           tintColor='#fff'
@@ -28,6 +37,7 @@ class TimetableReact extends Component {
       </View>
     );
   }
+
 }
 
 const styles = StyleSheet.create({

@@ -8,6 +8,7 @@ import React, {
 
 import {NavButton} from 'react-native-nav'
 
+var Subscribable = require('Subscribable');
 var CriteriaScreen = require('./CriteriaScreen');
 var DateScreen = require('./DateScreen');
 var Icon = require('react-native-vector-icons/Ionicons');
@@ -20,17 +21,19 @@ const emptyDataSource = new ControlledRefreshableListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2
 });
 
-class TimetableScreen extends Component {
+var TimetableScreen = React.createClass({
 
-  constructor(props) {
-    super(props);
-    this.state = {
+  mixins: [Subscribable.Mixin],
+
+  getInitialState: function() {
+    return {
       dataSource: emptyDataSource,
       loading: false
-    }
-  }
+    };
+  },
 
-  componentDidMount() {
+  componentDidMount: function() {
+    this.addListenerOn(this.props.events, 'refreshTimetable', this.onRefresh);
     StorageProvider.getTimetable().then((timetable) => {
       if (!this.timetableHasBeenLoaded) {
         this.setState({dataSource: this.getDataSource(timetable)});
@@ -41,37 +44,37 @@ class TimetableScreen extends Component {
         this.loadTimetable();
       }
     });
-  }
+  },
 
-  getDataSource(data) {
+  getDataSource: function(data) {
     return data && data.length > 0 ? emptyDataSource.cloneWithRows(data) : emptyDataSource;
-  }
+  },
 
-  loadTimetable() {
+  loadTimetable: function() {
     this.setState({loading: true});
     StorageProvider.getCriteriaType().then((criteriaType) => {
       StorageProvider.getCriterion().then((criterion) => {
         if (criterion) {
           DataProvider.getTimetable(criteriaType, criterion.id, '15.04.2016', '30.04.2016')
-            .then(this.onTimetableLoaded.bind(this))
-            .catch(this.onNetworkError.bind(this));
+            .then(this.onTimetableLoaded)
+            .catch(this.onNetworkError);
         } else {
           this.toCriteriaScreen();
         }
       });
     });
-  }
+  },
 
-  onTimetableLoaded(days) {
+  onTimetableLoaded: function(days) {
     this.timetableHasBeenLoaded = true;
     StorageProvider.setTimetable(days);
     this.setState({
       dataSource: this.getDataSource(days),
       loading: false
     });
-  }
+  },
 
-  onNetworkError() {
+  onNetworkError: function() {
     if (!this.alertsLocked) {
       this.alertsLocked = true;
       Alert.alert('Не удалось загрузить данные', null, [{
@@ -80,35 +83,47 @@ class TimetableScreen extends Component {
       }]);
     }
     this.setState({loading: false});
-  }
+  },
 
-  toCriteriaScreen() {
+  onRefresh: function() {
+    this.listView.getScrollResponder().scrollResponderScrollTo({x: 0, y: -64});
+    this.loadTimetable();
+  },
+
+  toCriteriaScreen: function() {
     this.props.navigator.push({
       title: 'Выбор критерия',
-      component: CriteriaScreen
+      component: CriteriaScreen,
+      passProps: {
+        events: this.props.events
+      }
     });
-  }
+  },
 
-  toCalendarScreen() {
+  toCalendarScreen: function() {
     this.props.navigator.push({
       title: 'Выбор даты',
-      component: DateScreen
+      component: DateScreen,
+      passProps: {
+        events: this.props.events
+      }
     });
-  }
+  },
 
-  render() {
+  render: function() {
     return (
       <View style={styles.container}>
         <ControlledRefreshableListView
+          ref={(c) => this.listView = c}
           isRefreshing={this.state.loading}
           style={styles.list}
           dataSource={this.state.dataSource}
           renderRow={this.renderRow}
-          onRefresh={this.loadTimetable.bind(this)}
+          onRefresh={this.loadTimetable}
           refreshDescription="Загружаем расписание..."
         />
         <View style={styles.toolbar}>
-          <NavButton onPress={this.toCriteriaScreen.bind(this)}>
+          <NavButton onPress={this.toCriteriaScreen}>
             <Icon
               name="ios-people-outline"
               size={30}
@@ -116,7 +131,7 @@ class TimetableScreen extends Component {
           </NavButton>
           <View style={styles.spacer}>
           </View>
-          <NavButton onPress={this.toCalendarScreen.bind(this)}>
+          <NavButton onPress={this.toCalendarScreen}>
             <Icon
               name="ios-calendar-outline"
               size={30}
@@ -125,15 +140,15 @@ class TimetableScreen extends Component {
         </View>
       </View>
     );
-  }
+  },
 
-  renderRow(day) {
+  renderRow: function(day) {
     return (
       <DayView day={day} />
     );
   }
 
-}
+});
 
 const styles = StyleSheet.create({
   container: {
