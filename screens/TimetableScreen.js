@@ -55,9 +55,11 @@ var TimetableScreen = React.createClass({
     StorageProvider.getCriteriaType().then((criteriaType) => {
       StorageProvider.getCriterion().then((criterion) => {
         if (criterion) {
-          DataProvider.getTimetable(criteriaType, criterion.id, '15.04.2016', '30.04.2016')
-            .then(this.onTimetableLoaded)
-            .catch(this.onNetworkError);
+          StorageProvider.getDateRange().then((dateRange) => {
+            DataProvider.getTimetable(criteriaType, criterion.id, dateRange)
+              .then(this.onTimetableLoaded)
+              .catch(this.onNetworkError);
+          });
         } else {
           this.toCriteriaScreen();
         }
@@ -75,7 +77,8 @@ var TimetableScreen = React.createClass({
   },
 
   onNetworkError: function() {
-    if (!this.alertsLocked) {
+    if (!this.alertsLocked &&
+        this.props.navigator.navigationContext.currentRoute.title == this.props.route.title) {
       this.alertsLocked = true;
       Alert.alert('Не удалось загрузить данные', null, [{
         text: 'OK',

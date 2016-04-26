@@ -11,6 +11,7 @@ import PopupDatePicker from 'rn-date-picker/src/Popup';
 
 var moment = require('moment');
 var DateUtils = require('../utils/DateUtils');
+var StorageProvider = require('../providers/StorageProvider');
 
 const dateOptions = [
   '7 дней',
@@ -26,19 +27,44 @@ class DateScreen extends Component {
     super(props);
     this.state = {
       selectedOption: dateOptions[0],
-      fromDate: new Date(),
-      toDate: new Date(),
+      customDateRange: DateUtils.getTodayRange(),
+      datePickerValue: new Date(),
       fromSelected: false,
       toSelected: false
     }
   }
 
   componentDidMount() {
-
+    StorageProvider.getDateRangeOption().then((option) => {
+      this.setState({
+        selectedOption: dateOptions[option]
+      });
+    });
+    StorageProvider.getCustomDateRange().then((dateRange) => {
+      this.setState({
+        customDateRange: dateRange
+      });
+    });
   }
 
   onSelectedOptionChanged(option) {
+    StorageProvider.setDateRangeOption(dateOptions.indexOf(option))
+      .then(() => this.props.events.emit('refreshTimetable'));
     this.setState({selectedOption: option});
+  }
+
+  onFromSelected() {
+    this.setState({
+      fromSelected: true,
+      datePickerValue: DateUtils.toDate(this.state.customDateRange.from)
+    });
+  }
+
+  onToSelected() {
+    this.setState({
+      toSelected: true,
+      datePickerValue: DateUtils.toDate(this.state.customDateRange.to)
+    });
   }
 
   onCustomDateChanged(date) {
@@ -47,11 +73,21 @@ class DateScreen extends Component {
       toSelected: false
     };
     if (this.state.fromSelected) {
-      state.fromDate = date;
+      state.customDateRange = {
+        from: DateUtils.toString(date),
+        to: DateUtils.isBefore(date, this.state.customDateRange.to) ?
+              this.state.customDateRange.to : DateUtils.toString(date)
+      }
     }
     else if (this.state.toSelected) {
-      state.toDate = date;
+      state.customDateRange = {
+        from: DateUtils.isAfter(date, this.state.customDateRange.from) ?
+              this.state.customDateRange.from : DateUtils.toString(date),
+        to: DateUtils.toString(date)
+      }
     }
+    StorageProvider.setCustomDateRange(state.customDateRange)
+      .then(() => this.props.events.emit('refreshTimetable'));
     this.setState(state);
   }
 
@@ -79,7 +115,8 @@ class DateScreen extends Component {
         <PopupDatePicker
           visible={this.state.fromSelected || this.state.toSelected}
           mode='date'
-          date={new Date()}
+          defaultDate={this.state.datePickerValue}
+          date={this.state.datePickerValue}
           onChange={this.onCustomDateChanged.bind(this)}
           onDismiss={this.onCustomDateDismissed.bind(this)}
           okText='ОК'
@@ -92,29 +129,30 @@ class DateScreen extends Component {
   renderCustomSection() {
     if (this.state.selectedOption != dateOptions[4]) return;
 
-    var fromDate = DateUtils.toString(this.state.fromDate);
-    var toDate = DateUtils.toString(this.state.toDate);
-
     return (
       <View>
         <Text style={styles.header}>Выберите дату</Text>
         <TouchableHighlight
-          onPress={() => this.setState({fromSelected: true})}
+          onPress={this.onFromSelected.bind(this)}
           underlayColor='#eeeeee'
         >
           <View style={styles.customDateContainer}>
             <Text style={styles.customDateLabel}>От</Text>
-            <Text style={styles.customDateValue}>{fromDate}</Text>
+            <Text style={styles.customDateValue}>
+              {this.state.customDateRange.from}
+            </Text>
           </View>
         </TouchableHighlight>
         <View style={styles.separator}/>
         <TouchableHighlight
-          onPress={() => this.setState({toSelected: true})}
+          onPress={this.onToSelected.bind(this)}
           underlayColor='#eeeeee'
         >
           <View style={styles.customDateContainer}>
             <Text style={styles.customDateLabel}>До</Text>
-            <Text style={styles.customDateValue}>{toDate}</Text>
+            <Text style={styles.customDateValue}>
+              {this.state.customDateRange.to}
+            </Text>
           </View>
         </TouchableHighlight>
         <View style={styles.separator}/>

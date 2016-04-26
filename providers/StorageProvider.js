@@ -1,10 +1,19 @@
 import {AsyncStorage} from 'react-native'
 
+var DateUtils = require('../utils/DateUtils');
+
 const TIMETABLE_KEY = 'timetable';
 const CRITERIA_TYPE_KEY = 'criteriaType';
 const CRITERION_KEY = 'criterion';
 const DATE_RANGE_OPTION_KEY = 'dateRangeOption';
 const CUSTOM_DATE_RANGE_KEY = 'customDateRange';
+
+const DATE_RANGES_MAPPING = [
+  DateUtils.getSevenDays,
+  DateUtils.getCurrentWeek,
+  DateUtils.getNextWeek,
+  DateUtils.getCurrentMonth
+];
 
 function getObject(key) {
   return new Promise((resolve, reject) => {
@@ -60,7 +69,10 @@ class StorageProvider {
   }
 
   static getDateRangeOption() {
-    return getObject(DATE_RANGE_OPTION_KEY);
+    return getObject(DATE_RANGE_OPTION_KEY)
+      .then((option) => {
+        return option ? option : 0;
+      });
   }
 
   static setDateRangeOption(option) {
@@ -68,11 +80,28 @@ class StorageProvider {
   }
 
   static getCustomDateRange() {
-    return getObject(CUSTOM_DATE_RANGE_KEY);
+    return getObject(CUSTOM_DATE_RANGE_KEY)
+      .then((dateRange) => {
+        return dateRange ? dateRange : DateUtils.getTodayRange();
+      });
   }
 
   static setCustomDateRange(dateRange) {
     return setObject(CUSTOM_DATE_RANGE_KEY, dateRange);
+  }
+
+  static getDateRange() {
+    return new Promise((resolve, reject) => {
+      this.getDateRangeOption().then((option) => {
+        if (option < DATE_RANGES_MAPPING.length) {
+          resolve(DATE_RANGES_MAPPING[option]());
+        } else {
+          this.getCustomDateRange().then((dateRange) => {
+            resolve(dateRange);
+          });
+        }
+      });
+    });
   }
 
 }

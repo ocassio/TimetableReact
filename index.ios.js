@@ -17,7 +17,6 @@ class TimetableReact extends Component {
   }
 
   render() {
-    // StatusBar.barStyle = 'light-content';
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content"/>

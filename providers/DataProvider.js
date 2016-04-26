@@ -99,14 +99,14 @@ function parseCriteria(html) {
 
 class DataProvider {
 
-  static getTimetable(criteriaType, criterion, from, to) {
+  static getTimetable(criteriaType, criterion, dateRange) {
     return new Promise(function(resolve, reject) {
       var params = '';
       params = params.concat(
         'rel=', criteriaType, '&',
         'vr=', EncodingUtils.unicodeToWin1251(criterion), '&',
-        'from=', from, '&',
-        'to=', to, '&',
+        'from=', dateRange.from, '&',
+        'to=', dateRange.to, '&',
         'submit_button=', 'ПОКАЗАТЬ'
       );
 
