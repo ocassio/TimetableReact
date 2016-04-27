@@ -8,6 +8,8 @@ import React, {
   Alert
 } from 'react-native';
 
+import Search from 'react-native-search-bar';
+
 var Subscribable = require('Subscribable');
 var Icon = require('react-native-vector-icons/Ionicons');
 var ControlledRefreshableListView = require('react-native-refreshable-listview/lib/ControlledRefreshableListView');
@@ -27,6 +29,7 @@ class CriteriaScreen extends Component {
     this.state = {
       type: 0,
       dataSource: emptyDataSource,
+      query: '',
       loading: false
     }
   }
@@ -38,7 +41,13 @@ class CriteriaScreen extends Component {
   }
 
   getDataSource(data) {
-    return data && data.length > 0 ? emptyDataSource.cloneWithRows(data) : emptyDataSource;
+    if (!data) return emptyDataSource;
+
+    var filteredData = data.filter((criterion) => {
+      return criterion.name.toLowerCase().includes(this.state.query);
+    });
+
+    return filteredData.length > 0 ? emptyDataSource.cloneWithRows(filteredData) : emptyDataSource;
   }
 
   setType(type) {
@@ -67,7 +76,8 @@ class CriteriaScreen extends Component {
     criteriaCache[this.state.type] = criteria;
   }
 
-  onNetworkError() {
+  onNetworkError(e) {
+    console.error(e);
     if (!this.alertsLocked) {
       this.alertsLocked = true;
       Alert.alert('Не удалось загрузить данные', null, [{
@@ -88,55 +98,68 @@ class CriteriaScreen extends Component {
     });
   }
 
+  onSearchQueryChange(query) {
+    this.state.query = query.toLowerCase();
+    this.setType(this.state.type);
+  }
+
   render() {
     return (
-      <TabBarIOS>
-        <Icon.TabBarItem
-          title="Группы"
-          iconName="ios-people-outline"
-          selectedIconName="ios-people"
-          onPress={this.setType.bind(this, 0)}
-          selected={this.state.type == 0}>
-          <ControlledRefreshableListView
-            isRefreshing={this.state.loading}
-            dataSource={this.state.dataSource}
-            renderRow={this.renderRow.bind(this)}
-            renderSeparator={this.renderSeparator}
-            onRefresh={this.loadCriteria.bind(this)}
-            refreshDescription="Загружаем группы..."
-          />
-        </Icon.TabBarItem>
-        <Icon.TabBarItem
-          title="Преподаватели"
-          iconName="ios-person-outline"
-          selectedIconName="ios-person"
-          onPress={this.setType.bind(this, 1)}
-          selected={this.state.type == 1}>
-          <ControlledRefreshableListView
-            isRefreshing={this.state.loading}
-            dataSource={this.state.dataSource}
-            renderRow={this.renderRow.bind(this)}
-            renderSeparator={this.renderSeparator}
-            onRefresh={this.loadCriteria.bind(this)}
-            refreshDescription="Загружаем преподавателей..."
-          />
-        </Icon.TabBarItem>
-        <Icon.TabBarItem
-          title="Аудитории"
-          iconName="ios-home-outline"
-          selectedIconName="ios-home"
-          onPress={this.setType.bind(this, 2)}
-          selected={this.state.type == 2}>
-          <ControlledRefreshableListView
-            isRefreshing={this.state.loading}
-            dataSource={this.state.dataSource}
-            renderRow={this.renderRow.bind(this)}
-            renderSeparator={this.renderSeparator}
-            onRefresh={this.loadCriteria.bind(this)}
-            refreshDescription="Загружаем аудитории..."
-          />
-        </Icon.TabBarItem>
-      </TabBarIOS>
+      <View style={styles.container}>
+        <Search
+          style={styles.search}
+          placeholder='Поиск'
+          searchBarStyle='minimal'
+          onChangeText={this.onSearchQueryChange.bind(this)}
+        />
+        <TabBarIOS style={styles.tabBar}>
+          <Icon.TabBarItem
+            title="Группы"
+            iconName="ios-people-outline"
+            selectedIconName="ios-people"
+            onPress={this.setType.bind(this, 0)}
+            selected={this.state.type == 0}>
+            <ControlledRefreshableListView
+              isRefreshing={this.state.loading}
+              dataSource={this.state.dataSource}
+              renderRow={this.renderRow.bind(this)}
+              renderSeparator={this.renderSeparator}
+              onRefresh={this.loadCriteria.bind(this)}
+              refreshDescription="Загружаем группы..."
+            />
+          </Icon.TabBarItem>
+          <Icon.TabBarItem
+            title="Преподаватели"
+            iconName="ios-person-outline"
+            selectedIconName="ios-person"
+            onPress={this.setType.bind(this, 1)}
+            selected={this.state.type == 1}>
+            <ControlledRefreshableListView
+              isRefreshing={this.state.loading}
+              dataSource={this.state.dataSource}
+              renderRow={this.renderRow.bind(this)}
+              renderSeparator={this.renderSeparator}
+              onRefresh={this.loadCriteria.bind(this)}
+              refreshDescription="Загружаем преподавателей..."
+            />
+          </Icon.TabBarItem>
+          <Icon.TabBarItem
+            title="Аудитории"
+            iconName="ios-home-outline"
+            selectedIconName="ios-home"
+            onPress={this.setType.bind(this, 2)}
+            selected={this.state.type == 2}>
+            <ControlledRefreshableListView
+              isRefreshing={this.state.loading}
+              dataSource={this.state.dataSource}
+              renderRow={this.renderRow.bind(this)}
+              renderSeparator={this.renderSeparator}
+              onRefresh={this.loadCriteria.bind(this)}
+              refreshDescription="Загружаем аудитории..."
+            />
+          </Icon.TabBarItem>
+        </TabBarIOS>
+      </View>
     );
   }
 
@@ -163,6 +186,19 @@ class CriteriaScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    // backgroundColor: '#eeeeee'
+  },
+  search: {
+    marginTop: 64,
+    height: 40,
+    // backgroundColor: '#eeeeee'
+  },
+  tabBar: {
+    flex: 1
+  },
   criterion: {
     fontSize: 16,
     padding: 15
