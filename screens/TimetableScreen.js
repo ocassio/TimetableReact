@@ -8,9 +8,9 @@ import React, {
 } from 'react-native';
 
 import {NavButton} from 'react-native-nav'
+import CriteriaScreen from './CriteriaScreen'
 
 var Subscribable = require('Subscribable');
-var CriteriaScreen = require('./CriteriaScreen');
 var DateScreen = require('./DateScreen');
 var Icon = require('react-native-vector-icons/Ionicons');
 var ControlledRefreshableListView = require('react-native-refreshable-listview/lib/ControlledRefreshableListView');
@@ -22,7 +22,7 @@ const emptyDataSource = new ControlledRefreshableListView.DataSource({
   rowHasChanged: (r1, r2) => r1 !== r2
 });
 
-var TimetableScreen = React.createClass({
+const TimetableScreen = React.createClass({
 
   mixins: [Subscribable.Mixin],
 
@@ -62,7 +62,7 @@ var TimetableScreen = React.createClass({
               .catch(this.onNetworkError);
           });
         } else {
-          this.toCriteriaScreen();
+          this.toCriteriaScreen(true);
         }
       });
     });
@@ -94,14 +94,21 @@ var TimetableScreen = React.createClass({
     this.loadTimetable();
   },
 
-  toCriteriaScreen: function() {
-    this.props.navigator.push({
+  toCriteriaScreen: function(reset) {
+    var route = {
       title: 'Выбор критерия',
       component: CriteriaScreen,
       passProps: {
-        events: this.props.events
+        events: this.props.events,
+        reset: reset === true
       }
-    });
+    };
+    if (reset === true) {
+      this.props.navigator.resetTo(route);
+    }
+    else {
+      this.props.navigator.push(route);
+    }
   },
 
   toCalendarScreen: function() {
@@ -117,6 +124,7 @@ var TimetableScreen = React.createClass({
   render: function() {
     return (
       <View style={styles.container}>
+        {this.renderNoLessonsMessage()}
         <ControlledRefreshableListView
           ref={(c) => this.listView = c}
           isRefreshing={this.state.loading}
@@ -126,7 +134,6 @@ var TimetableScreen = React.createClass({
           onRefresh={this.loadTimetable}
           refreshDescription="Загружаем расписание..."
         />
-        {this.renderNoLessonsMessage()}
         <View style={styles.toolbar}>
           <NavButton onPress={this.toCriteriaScreen}>
             <Icon
@@ -190,20 +197,14 @@ const styles = StyleSheet.create({
     bottom: 44,
     left: 0,
     right: 0,
-    // opacity: 0.5,
     alignItems: 'center',
     justifyContent: 'center'
-
   },
   message: {
-    // marginTop: 100,
-    // alignSelf: 'center',
-    // textAlign: 'center',
-    // backgroundColor: '#ff0000'
     opacity: 0.7,
     fontSize: 16,
     fontWeight: '300'
   }
 });
 
-module.exports = TimetableScreen;
+export default TimetableScreen;

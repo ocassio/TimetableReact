@@ -9,6 +9,7 @@ import React, {
 } from 'react-native';
 
 import Search from 'react-native-search-bar';
+import TimetableScreen from './TimetableScreen';
 
 var Subscribable = require('Subscribable');
 var Icon = require('react-native-vector-icons/Ionicons');
@@ -127,10 +128,7 @@ class CriteriaScreen extends Component {
     Promise.all([
       StorageProvider.setCriteriaType(this.state.type),
       StorageProvider.setCriterion(criterion)
-    ]).then(() => {
-      this.props.navigator.pop();
-      this.props.events.emit('refreshTimetable');
-    });
+    ]).then(this.toTimetableScreen.bind(this));
   }
 
   saveRecent(criterion) {
@@ -148,6 +146,22 @@ class CriteriaScreen extends Component {
     this.setState({
       dataSource: this.getDataSource(criteriaCache[this.state.type])
     });
+  }
+
+  toTimetableScreen() {
+    if (!this.props.reset) {
+      this.props.navigator.pop();
+      this.props.events.emit('refreshTimetable');
+    }
+    else {
+      this.props.navigator.replace({
+        title: 'Расписание',
+        component: TimetableScreen,
+        passProps: {
+          events: this.props.events
+        }
+      });
+    }
   }
 
   render() {
@@ -275,4 +289,4 @@ const styles = StyleSheet.create({
   }
 });
 
-module.exports = CriteriaScreen;
+export default CriteriaScreen;

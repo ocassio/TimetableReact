@@ -7,8 +7,9 @@ import React, {
   StatusBar
 } from 'react-native';
 
+import TimetableScreen from './screens/TimetableScreen';
+
 var EventEmitter = require('EventEmitter');
-var TimetableScreen = require('./screens/TimetableScreen');
 
 class TimetableReact extends Component {
 
