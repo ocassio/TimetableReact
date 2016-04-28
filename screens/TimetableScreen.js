@@ -2,6 +2,7 @@ import React, {
   Component,
   StyleSheet,
   View,
+  Text,
   Alert,
   NetInfo
 } from 'react-native';
@@ -125,6 +126,7 @@ var TimetableScreen = React.createClass({
           onRefresh={this.loadTimetable}
           refreshDescription="Загружаем расписание..."
         />
+        {this.renderNoLessonsMessage()}
         <View style={styles.toolbar}>
           <NavButton onPress={this.toCriteriaScreen}>
             <Icon
@@ -149,6 +151,15 @@ var TimetableScreen = React.createClass({
     return (
       <DayView day={day} />
     );
+  },
+
+  renderNoLessonsMessage: function() {
+    if (this.state.dataSource.getRowCount() > 0) return;
+    return (
+      <View style={styles.messageContainer}>
+        <Text style={styles.message}>Пары отсутствуют</Text>
+      </View>
+    );
   }
 
 });
@@ -171,6 +182,27 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flex: 1
+  },
+  messageContainer: {
+    flexDirection: 'row',
+    position: 'absolute',
+    top: 0,
+    bottom: 44,
+    left: 0,
+    right: 0,
+    // opacity: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center'
+
+  },
+  message: {
+    // marginTop: 100,
+    // alignSelf: 'center',
+    // textAlign: 'center',
+    // backgroundColor: '#ff0000'
+    opacity: 0.7,
+    fontSize: 16,
+    fontWeight: '300'
   }
 });
 
