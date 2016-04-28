@@ -5,6 +5,7 @@ var DateUtils = require('../utils/DateUtils');
 const TIMETABLE_KEY = 'timetable';
 const CRITERIA_TYPE_KEY = 'criteriaType';
 const CRITERION_KEY = 'criterion';
+const RECENT_CRITERIA_KEY = 'recentCriteria';
 const DATE_RANGE_OPTION_KEY = 'dateRangeOption';
 const CUSTOM_DATE_RANGE_KEY = 'customDateRange';
 
@@ -66,6 +67,17 @@ class StorageProvider {
 
   static setCriterion(criterion) {
     return setObject(CRITERION_KEY, criterion);
+  }
+
+  static getRecentCriteria() {
+    return getObject(RECENT_CRITERIA_KEY)
+      .then((criteria) => {
+        return criteria ? criteria : [[], [], []];
+      });
+  }
+
+  static setRecentCriteria(criteria) {
+    return setObject(RECENT_CRITERIA_KEY, criteria);
   }
 
   static getDateRangeOption() {

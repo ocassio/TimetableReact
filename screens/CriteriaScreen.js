@@ -16,8 +16,14 @@ var ControlledRefreshableListView = require('react-native-refreshable-listview/l
 var DataProvider = require('../providers/DataProvider');
 var StorageProvider = require('../providers/StorageProvider');
 
+const SECTION_IDS = [0, 1];
+const SECTION_HEADERS = ['Недавние', 'Все'];
+
 const emptyDataSource = new ControlledRefreshableListView.DataSource({
-  rowHasChanged: (r1, r2) => r1 !== r2
+  getSectionHeaderData: (dataBlob, sectionId) => SECTION_HEADERS[sectionId],
+  getRowData: (dataBlob, sectionId, rowId) => dataBlob[sectionId + ':' + rowId],
+  rowHasChanged: (r1, r2) => r1 !== r2,
+  sectionHeaderHasChanged: (s1, s2) => s1 !== s2
 });
 
 var criteriaCache = [];
@@ -28,6 +34,7 @@ class CriteriaScreen extends Component {
     super(props);
     this.state = {
       type: 0,
+      recent: [],
       dataSource: emptyDataSource,
       query: '',
       loading: false
@@ -36,22 +43,49 @@ class CriteriaScreen extends Component {
 
   componentDidMount() {
     StorageProvider.getCriteriaType().then((type) => {
-      this.setType(type ? type : this.state.type);
+      StorageProvider.getRecentCriteria().then((recent) => {
+        this.state.recent = recent;
+        this.setType(type ? type : this.state.type);
+      });
     });
   }
 
   getDataSource(data) {
     if (!data) return emptyDataSource;
 
+    var recent = this.state.recent[this.state.type];
+    var showRecent = this.state.query.length == 0 && recent.length > 0;
+
+    var dataBlob = {};
+    var sectionIds = showRecent ? SECTION_IDS : [1];
+    var rowIds = [];
+
+    if (showRecent) {
+      rowIds[0] = [];
+      recent.forEach((criterion) => {
+        rowIds[0].push(criterion.id);
+        dataBlob['0:' + criterion.id] = criterion;
+      });
+    }
+
     var filteredData = data.filter((criterion) => {
       return criterion.name.toLowerCase().includes(this.state.query);
     });
 
-    return filteredData.length > 0 ? emptyDataSource.cloneWithRows(filteredData) : emptyDataSource;
+    var allRowIndex = showRecent ? 1 : 0;
+    rowIds[allRowIndex] = [];
+    filteredData.forEach((criterion) => {
+      rowIds[allRowIndex].push(criterion.id);
+      dataBlob['1:' + criterion.id] = criterion;
+    });
+
+    return filteredData.length > 0 ?
+      emptyDataSource.cloneWithRowsAndSections(dataBlob, sectionIds, rowIds) : emptyDataSource;
   }
 
   setType(type) {
     var criteria = criteriaCache[type];
+    this.state.type = type;
     this.setState({
       type: type,
       dataSource: this.getDataSource(criteria)
@@ -89,6 +123,7 @@ class CriteriaScreen extends Component {
   }
 
   selectCriterion(criterion) {
+    this.saveRecent(criterion);
     Promise.all([
       StorageProvider.setCriteriaType(this.state.type),
       StorageProvider.setCriterion(criterion)
@@ -98,9 +133,21 @@ class CriteriaScreen extends Component {
     });
   }
 
+  saveRecent(criterion) {
+    var recent = this.state.recent[this.state.type]
+      .filter((c) => c.id != criterion.id)
+      .slice(0, 2);
+    recent.unshift(criterion);
+
+    this.state.recent[this.state.type] = recent;
+    StorageProvider.setRecentCriteria(this.state.recent);
+  }
+
   onSearchQueryChange(query) {
     this.state.query = query.toLowerCase();
-    this.setType(this.state.type);
+    this.setState({
+      dataSource: this.getDataSource(criteriaCache[this.state.type])
+    });
   }
 
   render() {
@@ -123,6 +170,7 @@ class CriteriaScreen extends Component {
               isRefreshing={this.state.loading}
               dataSource={this.state.dataSource}
               renderRow={this.renderRow.bind(this)}
+              renderSectionHeader={this.renderSectionHeader}
               renderSeparator={this.renderSeparator}
               onRefresh={this.loadCriteria.bind(this)}
               refreshDescription="Загружаем группы..."
@@ -138,6 +186,7 @@ class CriteriaScreen extends Component {
               isRefreshing={this.state.loading}
               dataSource={this.state.dataSource}
               renderRow={this.renderRow.bind(this)}
+              renderSectionHeader={this.renderSectionHeader}
               renderSeparator={this.renderSeparator}
               onRefresh={this.loadCriteria.bind(this)}
               refreshDescription="Загружаем преподавателей..."
@@ -153,6 +202,7 @@ class CriteriaScreen extends Component {
               isRefreshing={this.state.loading}
               dataSource={this.state.dataSource}
               renderRow={this.renderRow.bind(this)}
+              renderSectionHeader={this.renderSectionHeader}
               renderSeparator={this.renderSeparator}
               onRefresh={this.loadCriteria.bind(this)}
               refreshDescription="Загружаем аудитории..."
@@ -160,6 +210,12 @@ class CriteriaScreen extends Component {
           </Icon.TabBarItem>
         </TabBarIOS>
       </View>
+    );
+  }
+
+  renderSectionHeader(header) {
+    return (
+      <Text style={styles.header}>{header}</Text>
     );
   }
 
@@ -188,20 +244,30 @@ class CriteriaScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
-    // backgroundColor: '#eeeeee'
+    flexDirection: 'column'
   },
   search: {
     marginTop: 64,
-    height: 40,
-    // backgroundColor: '#eeeeee'
+    height: 40
   },
   tabBar: {
     flex: 1
   },
+  header: {
+    fontSize: 16,
+    textAlign: 'left',
+    fontWeight: '300',
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    backgroundColor: '#efeff4'
+  },
   criterion: {
     fontSize: 16,
-    padding: 15
+    padding: 15,
+    paddingLeft: 20,
+    paddingRight: 20
   },
   separator: {
     height: 1,
