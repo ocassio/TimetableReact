@@ -9,6 +9,8 @@ import React, {
 } from 'react-native';
 
 import Search from 'react-native-search-bar';
+import Device from 'react-native-device';
+import Orientation from 'react-native-orientation';
 import TimetableScreen from './TimetableScreen';
 
 var Subscribable = require('Subscribable');
@@ -27,6 +29,8 @@ const emptyDataSource = new ControlledRefreshableListView.DataSource({
   sectionHeaderHasChanged: (s1, s2) => s1 !== s2
 });
 
+var counter = 0;
+
 var criteriaCache = [];
 
 class CriteriaScreen extends Component {
@@ -38,17 +42,25 @@ class CriteriaScreen extends Component {
       recent: [],
       dataSource: emptyDataSource,
       query: '',
-      loading: false
+      loading: false,
+      orientation: Orientation.getInitialOrientation()
     }
   }
 
   componentDidMount() {
+    this.id = 'CriteriaScreen:' + ++counter;
+    Orientation.addOrientationListener(this.onRotate.bind(this), this.id);
+
     StorageProvider.getCriteriaType().then((type) => {
       StorageProvider.getRecentCriteria().then((recent) => {
         this.state.recent = recent;
         this.setType(type ? type : this.state.type);
       });
     });
+  }
+
+  componentWillUnmount() {
+    Orientation.removeOrientationListener(this.id);
   }
 
   getDataSource(data) {
@@ -101,6 +113,12 @@ class CriteriaScreen extends Component {
     return DataProvider.getCriteria(this.state.type)
       .then(this.onCriteriaLoaded.bind(this))
       .catch(this.onNetworkError.bind(this));
+  }
+
+  onRotate(orientation) {
+    this.setState({
+      orientation: orientation
+    });
   }
 
   onCriteriaLoaded(criteria) {
@@ -165,8 +183,12 @@ class CriteriaScreen extends Component {
   }
 
   render() {
+    var marginTopStyle = {
+      marginTop: this.state.orientation == 'PORTRAIT' || Device.isIpad() ? 64 : 32
+    };
+
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, marginTopStyle]}>
         <Search
           style={styles.search}
           placeholder='Поиск'
@@ -261,7 +283,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column'
   },
   search: {
-    marginTop: 64,
     height: 40
   },
   tabBar: {
@@ -271,17 +292,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'left',
     fontWeight: '300',
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     backgroundColor: '#efeff4'
   },
   criterion: {
     fontSize: 16,
-    padding: 15,
-    paddingLeft: 20,
-    paddingRight: 20
+    paddingVertical: 15,
+    paddingHorizontal: 20
   },
   separator: {
     height: 1,

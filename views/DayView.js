@@ -44,6 +44,7 @@ class DayView extends Component {
         </View>
         <ListView
           dataSource={this.state.dataSource}
+          contentContainerStyle={styles.list}
           renderRow={this.renderRow}
           renderSeparator={this.renderSeparator}
         />
@@ -102,6 +103,11 @@ const styles = StyleSheet.create({
   },
   todayBackground: {
     backgroundColor: '#EC407A'
+  },
+  list: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start'
   }
 });
 

@@ -3,6 +3,7 @@ import React, {
   StyleSheet,
   View,
   Text,
+  ScrollView,
   TouchableHighlight
 } from 'react-native';
 
@@ -100,7 +101,7 @@ class DateScreen extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView>
         <Text style={styles.header}>Диапазон</Text>
         <View style={styles.dateOptionsContainer}>
           <SegmentedControls
@@ -122,7 +123,7 @@ class DateScreen extends Component {
           okText='ОК'
           dismissText='Отмена'
         />
-      </View>
+      </ScrollView>
     );
   }
 
@@ -163,11 +164,8 @@ class DateScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    marginTop: 64
+  containerAlbum: {
+    marginTop: 44,
   },
   header: {
     paddingTop: 10,

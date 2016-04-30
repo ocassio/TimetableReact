@@ -2,17 +2,39 @@ import React, {
   Component,
   StyleSheet,
   View,
-  Text
+  Text,
+  Dimensions
 } from 'react-native';
 
-var Icon = require('react-native-vector-icons/Ionicons');
+import Device from 'react-native-device';
+import Orientation from 'react-native-orientation';
+import Icon from 'react-native-vector-icons/Ionicons';
+
+var counter = 0;
 
 class LessonView extends Component {
+
+  componentDidMount() {
+    this.id = 'LessonView:' + ++counter;
+    Orientation.addOrientationListener(this.onRotate.bind(this), this.id);
+  }
+
+  componentWillUnmount() {
+    Orientation.removeOrientationListener(this.id);
+  }
+
+  onRotate() {
+    this.forceUpdate();
+  }
+
   render() {
-    var lesson = this.props.lesson;
+    const lesson = this.props.lesson;
+    const windowWidth = Dimensions.get('window').width;
+    const width = Device.isIpad() ? 0.5 * windowWidth : windowWidth;
+    const widthStyle = {width: width};
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, widthStyle]}>
         <View>
           <Text style={styles.number}>{lesson.number}</Text>
           <Text style={styles.time}>{lesson.time.from}</Text>
@@ -48,11 +70,11 @@ class LessonView extends Component {
       </View>
     );
   }
+
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'row',
     backgroundColor: 'white',
     padding: 20
@@ -100,8 +122,7 @@ const styles = StyleSheet.create({
   },
   stretched: {
     flex: 1
-  },
-
+  }
 });
 
 module.exports = LessonView;

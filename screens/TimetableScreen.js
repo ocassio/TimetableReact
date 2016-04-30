@@ -7,8 +7,8 @@ import React, {
   NetInfo
 } from 'react-native';
 
-import {NavButton} from 'react-native-nav'
-import CriteriaScreen from './CriteriaScreen'
+import {NavButton} from 'react-native-nav';
+import CriteriaScreen from './CriteriaScreen';
 
 var Subscribable = require('Subscribable');
 var DateScreen = require('./DateScreen');
@@ -77,9 +77,10 @@ const TimetableScreen = React.createClass({
     });
   },
 
-  onNetworkError: function() {
+  onNetworkError: function(e) {
     if (!this.alertsLocked &&
         this.props.navigator.navigationContext.currentRoute.title == this.props.route.title) {
+      console.error(e);
       this.alertsLocked = true;
       Alert.alert('Не удалось загрузить данные', null, [{
         text: 'OK',
