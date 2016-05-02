@@ -7,8 +7,8 @@ import React, {
   TouchableHighlight
 } from 'react-native';
 
-import {SegmentedControls} from 'react-native-radio-buttons'
-import PopupDatePicker from 'rn-date-picker/src/Popup';
+import {SegmentedControls} from 'react-native-radio-buttons';
+import DatePickerPopup from '../views/DatePickerPopup';
 
 var moment = require('moment');
 var DateUtils = require('../utils/DateUtils');
@@ -113,15 +113,12 @@ class DateScreen extends Component {
           />
         </View>
         {this.renderCustomSection()}
-        <PopupDatePicker
+        <DatePickerPopup
           visible={this.state.fromSelected || this.state.toSelected}
           mode='date'
-          defaultDate={this.state.datePickerValue}
           date={this.state.datePickerValue}
-          onChange={this.onCustomDateChanged.bind(this)}
+          onSubmit={this.onCustomDateChanged.bind(this)}
           onDismiss={this.onCustomDateDismissed.bind(this)}
-          okText='ОК'
-          dismissText='Отмена'
         />
       </ScrollView>
     );

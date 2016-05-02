@@ -13,10 +13,10 @@
     "react-native-device": "^1.0.1",
     "react-native-nav": "^1.0.12",
     "react-native-orientation": "https://github.com/Ocassio/react-native-orientation/tarball/2f33b8a5b05ba12e0b2f78cb0a9309b22dea3fb5",
+    "react-native-overlay": "^0.4.2",
     "react-native-radio-buttons": "^0.9.1",
     "react-native-refreshable-listview": "^1.3.0",
     "react-native-search-bar": "^2.10.0",
-    "react-native-vector-icons": "^1.3.4",
-    "rn-date-picker": "^0.1.0"
+    "react-native-vector-icons": "^1.3.4"
   }
 }
