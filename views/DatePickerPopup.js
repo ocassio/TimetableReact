@@ -48,6 +48,9 @@ class DatePickerPopup extends React.Component {
   }
 
   render() {
+    const date = this.prevVisible == this.props.visible ? this.state.date : this.props.date;
+    this.prevVisible = this.props.visible;
+
     if (!this.props.visible) return (<View/>);
 
     const containerStyle = {
@@ -78,7 +81,7 @@ class DatePickerPopup extends React.Component {
             </View>
             <DatePickerIOS
               mode={this.props.mode}
-              date={this.state.date}
+              date={date}
               onDateChange={this.onPickerChange.bind(this)}
             />
           </View>
